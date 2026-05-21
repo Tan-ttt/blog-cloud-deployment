@@ -1,0 +1,43 @@
+groups:
+  # ==================== Tomcat 告警规则 ====================
+  - name: tomcat
+    rules:
+      - alert: TomcatDown
+        expr: up{job="tomcat"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: tomcat
+        annotations:
+          summary: "Tomcat 服务宕机"
+          description: "Tomcat 已停止运行超过 1 分钟，JMX Exporter 无法连接"
+
+      - alert: TomcatThreadPoolExhausted
+        expr: tomcat_threads_currentThreadsBusy / tomcat_threads_maxThreads > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: tomcat
+        annotations:
+          summary: "Tomcat 线程池接近耗尽"
+          description: "繁忙线程占比 {{ $value | humanizePercentage }}，超过 80% 阈值"
+
+      - alert: TomcatHighFullGC
+        expr: rate(jvm_gc_CollectionTime_total{collector=~".*MarkSweep.*|.*ConcurrentMarkSweep.*"}[10m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: tomcat
+        annotations:
+          summary: "Tomcat Full GC 频繁"
+          description: "近 10 分钟 Full GC 耗时超过 5 秒，可能存在内存泄漏"
+
+      - alert: TomcatMemoryHigh
+        expr: jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"} > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: tomcat
+        annotations:
+          summary: "Tomcat 堆内存使用率过高"
+          description: "堆内存使用率 {{ $value | humanizePercentage }}，超过 90%"

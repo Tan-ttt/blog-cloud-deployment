@@ -1,0 +1,43 @@
+groups:
+  # ==================== MySQL 告警规则 ====================
+  - name: mysql
+    rules:
+      - alert: MySQLDown
+        expr: mysql_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: mysql
+        annotations:
+          summary: "MySQL 服务宕机"
+          description: "MySQL 已停止运行超过 1 分钟，请立即检查"
+
+      - alert: MySQLHighConnections
+        expr: mysql_global_status_threads_connected / mysql_global_variables_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: mysql
+        annotations:
+          summary: "MySQL 连接数接近上限"
+          description: "当前连接数占比 {{ $value | humanizePercentage }}，超过 80%"
+
+      - alert: MySQLSlowQueries
+        expr: rate(mysql_global_status_slow_queries[5m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+          service: mysql
+        annotations:
+          summary: "MySQL 出现慢查询"
+          description: "近 5 分钟检测到慢查询，请检查 SQL 性能"
+
+      - alert: MySQLHighQPS
+        expr: rate(mysql_global_status_queries[5m]) > 1000
+        for: 10m
+        labels:
+          severity: warning
+          service: mysql
+        annotations:
+          summary: "MySQL QPS 过高"
+          description: "当前 QPS: {{ $value }}，持续超过 1000，需要关注"

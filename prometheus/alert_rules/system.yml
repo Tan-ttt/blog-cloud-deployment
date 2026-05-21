@@ -1,0 +1,70 @@
+groups:
+  - name: 服务器资源告警
+    rules:
+
+      - alert: CPU使用率过高
+        expr: |
+          100 - (
+            avg by(instance)(
+              rate(node_cpu_seconds_total{mode="idle"}[5m])
+            ) * 100
+          ) > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.instance }} CPU告警"
+          description: "CPU使用率 {{ $value | printf \"%.1f\" }}%，持续超过2分钟"
+
+      - alert: 内存使用率过高
+        expr: |
+          (1 - node_memory_MemAvailable_bytes /
+               node_memory_MemTotal_bytes) * 100 > 85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.instance }} 内存告警"
+          description: "内存使用率 {{ $value | printf \"%.1f\" }}%"
+
+      - alert: 磁盘空间不足
+        expr: |
+          (1 - node_filesystem_avail_bytes{fstype!="tmpfs"} /
+               node_filesystem_size_bytes{fstype!="tmpfs"}) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.instance }} 磁盘告警"
+          description: "磁盘 {{ $labels.mountpoint }} 使用率 {{ $value | printf \"%.1f\" }}%"
+
+      - alert: 磁盘空间严重不足
+        expr: |
+          (1 - node_filesystem_avail_bytes{fstype!="tmpfs"} /
+               node_filesystem_size_bytes{fstype!="tmpfs"}) * 100 > 90
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "🚨 {{ $labels.instance }} 磁盘严重告警"
+          description: "磁盘 {{ $labels.mountpoint }} 使用率 {{ $value | printf \"%.1f\" }}%，请立即处理"
+
+      - alert: 服务器失联
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "🔴 {{ $labels.instance }} 失联"
+          description: "服务器超过1分钟无法连接，请立即检查"
+
+      - alert: 网络流量异常
+        expr: |
+          rate(node_network_receive_bytes_total{device!="lo"}[5m])
+          / 1024 / 1024 > 50
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.instance }} 网络流量异常"
+          description: "入流量 {{ $value | printf \"%.1f\" }} MB/s，超过50MB/s"

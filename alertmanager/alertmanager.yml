@@ -1,0 +1,57 @@
+global:
+  resolve_timeout: 5m
+  # 邮件全局配置
+  smtp_smarthost: 'smtp.qq.com:465'
+  smtp_from: '1499238037@qq.com'
+  smtp_auth_username: '1499238037@qq.com'
+  smtp_auth_password: "YOUR_EMAIL_AUTH_CODE"
+  smtp_require_tls: false
+
+route:
+  group_by: ['alertname','instance']
+  group_wait: 5s      # 告警触发后等待30秒，如果在这期间有相同标签的告警触发，则将它们分组在一起发送通知
+  group_interval: 5s  # 同一组内的告警如果在5分钟内持续发生，则只发送一次通知
+  repeat_interval: 1m # 如果告警持续存在，每4小时重复发送一次通知，直到告警被解决
+  receiver: 'default'
+
+  routes:
+    # critical 走多渠道
+    - match:
+        severity: critical
+      receiver: 'critical-all'
+      repeat_interval: 1h
+
+    # warning 只推钉钉
+    - match:
+        severity: warning
+      receiver: 'warning-dingtalk'
+      repeat_interval: 4h
+
+receivers:
+  - name: 'default'
+    webhook_configs:
+      - url: 'http://localhost:8888/alert'
+        send_resolved: true
+
+  - name: 'critical-all'
+    webhook_configs:
+      - url: 'http://localhost:8888/dingtalk'
+        send_resolved: true
+      - url: 'http://localhost:8888/wecom'
+        send_resolved: true
+    email_configs:
+      - to: '1499238037@qq.com'
+        send_resolved: true
+
+  - name: 'warning-dingtalk'
+    webhook_configs:
+      - url: 'http://localhost:8888/dingtalk'
+        send_resolved: true
+
+# 抑制规则：同一台机器critical存在时，压制warning
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['instance']

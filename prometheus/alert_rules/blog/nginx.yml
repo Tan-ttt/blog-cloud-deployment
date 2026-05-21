@@ -1,0 +1,33 @@
+groups:
+  # ==================== Nginx 告警规则 ====================
+  - name: nginx
+    rules:
+      - alert: NginxDown
+        expr: nginx_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: nginx
+        annotations:
+          summary: "Nginx 服务宕机"
+          description: "Nginx 已停止运行超过 1 分钟，请立即检查"
+
+      - alert: NginxHigh4xxRate
+        expr: rate(nginx_http_requests_total{status=~"4.."}[5m]) / rate(nginx_http_requests_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: nginx
+        annotations:
+          summary: "Nginx 4xx 错误率过高"
+          description: "4xx 错误率 {{ $value | humanizePercentage }}，超过 10% 阈值"
+
+      - alert: NginxHigh5xxRate
+        expr: rate(nginx_http_requests_total{status=~"5.."}[5m]) / rate(nginx_http_requests_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          service: nginx
+        annotations:
+          summary: "Nginx 5xx 错误率过高"
+          description: "5xx 错误率 {{ $value | humanizePercentage }}，超过 5% 阈值，后端服务可能异常"
