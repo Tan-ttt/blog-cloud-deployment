@@ -21,10 +21,10 @@ route:
       receiver: 'critical-all'
       repeat_interval: 1h
 
-    # warning 只推钉钉
+    # warning 推钉钉+飞书
     - match:
         severity: warning
-      receiver: 'warning-dingtalk'
+      receiver: 'warning-dingtalk-feishu'
       repeat_interval: 4h
 
 receivers:
@@ -43,9 +43,11 @@ receivers:
       - to: '1499238037@qq.com'
         send_resolved: true
 
-  - name: 'warning-dingtalk'
+  - name: 'warning-dingtalk-feishu'
     webhook_configs:
       - url: 'http://localhost:8888/dingtalk'
+        send_resolved: true
+      - url: 'http://localhost:8888/feishu'
         send_resolved: true
 
 # 抑制规则：同一台机器critical存在时，压制warning
