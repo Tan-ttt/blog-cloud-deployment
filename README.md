@@ -2,18 +2,18 @@
 
 ## 项目简介
 
-本项目模拟企业生产环境，将一套 Java 博客系统完整部署到阿里云 ECS 云服务器上，并构建基本的监控与运维体系，实现系统上线对外提供服务。
+本项目模拟企业生产环境，将一套 Java 博客系统完整部署到阿里云 ECS 云服务器上，并构建基本的监控与运维体系。
 
-**项目目标**：掌握云服务器选型、基础服务搭建、反向代理配置、安全组策略、日志分析与云监控告警等云运维核心技能。
+**项目目标**：掌握云服务器选型、基础服务搭建、反向代理配置、安全组策略、日志分析与监控告警等云运维核心技能。
 
 ---
 ## 项目展示
 
 ### 博客首页
-![博客系统首页截图](./images/blog-homepage.png)
+<img src="./images/blog-homepage.png" width="600" height="auto">
 
 ### 后台管理页
-![博客后台管理页截图](./images/blog-dashboard.png)
+<img src="./images/blog-dashboard.png" width="600" height="auto">
 
 ---
 ## 技术栈
@@ -21,7 +21,7 @@
 | 组件 | 技术选型 |
 |------|----------|
 | 云平台 | 阿里云 ECS（弹性计算服务） |
-| 操作系统 | CentOS Stream 9 64位 |
+| 操作系统 | Alibaba Linux |
 | Web 服务器 | Apache Tomcat 9.0.97 |
 | 反向代理 | Nginx |
 | 数据库 | MySQL 8.0 |
@@ -108,14 +108,14 @@ Node Exp  Nginx Exp  Tomcat JMX  MySQL Exp
 - ℹ️  其他：/alert 接口 → 钉钉+飞书全渠道
 
 ### 告警通知截图
-## 告警通知截图
+
 | 钉钉告警 | 飞书告警 |
 |---------|----------|
-| ![钉钉告警](https://././images/dingtalk-alert.png) | ![飞书告警](https://././images/feishu-alert.png) |
+| <img src="./images/dingtalk-alert.png" width="300" height="auto"> | <img src="./images/feishu_alert.png" width="300" height="auto"> |
 
 | 企业微信告警 | 邮箱告警 |
 |-------------|----------|
-| ![企业微信告警](https://././images/wecom-alert.png) | ![邮箱告警](https://././images/email-alert.png) |
+| <img src="./images/wecom-alert.png" width="300" height="auto"> | <img src="./images/email-alert.png" width="300" height="auto"> |
 
 
 ### 监控指标一览
@@ -145,8 +145,14 @@ Node Exp  Nginx Exp  Tomcat JMX  MySQL Exp
   - Tomcat: ID 3457
   - MySQL: ID 7362
 
-###  Grafana 仪表盘展示
-https://./images/grafana-nginx.png
+### 📈 Grafana 仪表盘展示
+| node | nginx |
+|---------|----------|
+| <img src="./images/grafana-node.png" width="400" height="auto"> | <img src="./images/grafana-nginx.png" width="400" height="auto"> |
+
+| mysql | tomcat |
+|---------|----------|
+| <img src="./images/grafana-mysql.png" width="400" height="auto"> | <img src="./images/grafana-tomcat.png" width="400" height="auto"> |
 
 ### 快速启动监控
 
